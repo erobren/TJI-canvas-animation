@@ -17,8 +17,12 @@ export class Dot {
     this.connections = null;
   }
 
-  connect(dots) {
+  connectUsingList(dots) {
     this.connections = dots.filter(dot => this.id < dot.id && this.distanceTo(dot) <= maximumLineDistance)
+  }
+
+  connectUsingBSP(bspTree) {
+    this.connections = bspTree.collisions(this, maximumLineDistance);
   }
 
   distanceTo(otherDot) {
@@ -42,7 +46,8 @@ export class Dot {
   }
 
   draw(context) {
-    const size = Math.min(10, Math.max(2, this.connections.length*2))
+    // const size = Math.min(10, Math.max(2, this.connections.length*2))
+    const size = 2;
     context.beginPath();
     context.arc(this.x, this.y, size, 0, 2 * Math.PI, true);
     context.fillStyle = 'white';
@@ -51,17 +56,22 @@ export class Dot {
     this.connections.forEach((otherDot) => {
       const distance = this.distanceTo(otherDot);
       let strength = Math.max(0, maximumLineDistance - distance)/maximumLineDistance;
+      // let strength = Math.max(0, Math.abs(maximumLineDistance - distance))/maximumLineDistance;
+      // let strength = 1;
       // strength = Math.round(strength * 100) / 100
-      const color = `rgba(255, 255, 255, ${strength})`
+      const color = `rgba(255, 255, 255, ${strength})`;
+      // const color = "white";
       context.beginPath();
-      context.lineWidth = Math.ceil(10 * strength);
+      // context.lineWidth = Math.ceil(10 * strength);
+      // context.lineWidth = strength;
+      context.lineWidth = 1;
       context.strokeStyle = color;
       context.moveTo(this.x, this.y);
-      if ((this.id + otherDot.id) % 2 === 0) {
-        context.lineTo(this.x, otherDot.y);
-      } else {
-        context.lineTo(otherDot.x, this.y);
-      }
+      // if ((this.id + otherDot.id) % 2 === 0) {
+      //   context.lineTo(this.x, otherDot.y);
+      // } else {
+      //   context.lineTo(otherDot.x, this.y);
+      // }
       context.lineTo(otherDot.x, otherDot.y);
       context.stroke();
     })    
