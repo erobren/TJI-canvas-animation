@@ -1,4 +1,6 @@
+import { Dot } from './Dot';
 import './style.css'
+import { measureTime, someFrames } from './utility';
 
 const container = document.getElementById("container");
 const canvas = document.getElementById("canvas");
@@ -7,51 +9,31 @@ canvas.height = container.clientHeight;
 
 const context = canvas.getContext("2d");
 
-class Dot {
-  constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-
-    this.xMovement = 1;
-    this.yMovement = 1;
-
-    this.size = 10;
-  }
-
-  move() {
-    this.x += this.xMovement;
-    this.y += this.yMovement;
-  }
-
-  accellerate() {
-    if(this.x > canvas.width || this.x < 0) {
-      this.xMovement = -this.xMovement;
-    }
-    if(this.y > canvas.height || this.y < 0) {
-      this.yMovement = -this.yMovement;
-    }
-  }
-
-  draw(context) {
-    context.beginPath();
-    context.arc(this.x, this.y, this.size, 0, 2 * Math.PI, true);
-    context.fillStyle = 'white';
-    context.fill();
-  }
-}
 
 // const dot = new Dot();
-const dots = [...Array(50)].map(() => new Dot());
+const dots = [...Array(200)].map(() => new Dot());
+
+container.addEventListener("mousedown", (event) => {
+  dots.push(new Dot(event.clientX, event.clientY));
+}, true);
 
 function clearAndRender() {
   context.fillStyle = "rgba(0, 0, 0, 0.1)";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  
-  for(let dot of dots) {
-    dot.draw(context);
-    dot.move();
-    dot.accellerate();
-  }
+
+  measureTime("Connecting the dots: ", () => {
+    for(let dot of dots) {
+      dot.connect(dots);  
+    }
+  });
+    
+  measureTime("Draw and accellerate: ", () => {
+    for(let dot of dots) {
+      dot.draw(context);
+      dot.move();
+      dot.accellerate();
+    }
+  });
 }
 
 // function renderLoop() {
@@ -59,10 +41,15 @@ function clearAndRender() {
 //   setTimeout(renderLoop, 0);
 // }
 
+export let frameCounter = 1;
+
 async function renderLoop() {
   while(true) {
+    if (someFrames()) console.group("Render a frame:")
     clearAndRender();
-    await releaseControl()
+    await releaseControl();
+    if (someFrames()) console.groupEnd()
+    frameCounter++;
   }
 }
 
