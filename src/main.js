@@ -41,7 +41,7 @@ function clearAndRender() {
 
   bspTree.draw(context);
 
-  measureTime("Draw all dots: ", () => {
+  measureTime("Draw all dots on canvas: ", () => {
     for(let dot of dots) {
       dot.draw(context);
     }

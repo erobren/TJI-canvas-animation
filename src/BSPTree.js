@@ -86,13 +86,9 @@ export class HorizontalSplitBSPTree extends BSPTree {
   }
 
   collisions(dot, radius, result=[]) {
-        // console.log("a")
-
     if (this.dots) {
       for(let otherDot of this.dots) {
-        // console.log("#¤")
         if ((otherDot.id > dot.id) && (otherDot.distanceTo(dot) <= radius)) {
-          // console.log("push")
           result.push(otherDot)
         }
       }
